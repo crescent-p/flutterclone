@@ -1,12 +1,9 @@
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:flutterclone/controller/textinput.dart';
-import 'package:flutterclone/errorDialog/LoginError.dart';
-import 'package:flutterclone/pages/register_screen.dart';
-import 'package:flutterclone/resources/auth_methods.dart';
-import 'package:flutterclone/utils/showsnackbar.dart';
+import 'package:flutterclone/realBloc/auth_event.dart';
+import '../realBloc/auth_bloc.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -73,16 +70,29 @@ class _LoginScreenState extends State<LoginScreen> {
               height: 20,
             ),
             InkWell(
-              onTap: () => signInPerson(context),
+              onTap: () {
+                setState(() {
+                  _isLoading = true;
+                });
+                context.read<AuthBloc>().add(AuthEventLogin(
+                      email: emailController.text,
+                      password: passwordController.text,
+                    ));
+                setState(() {
+                  _isLoading = false;
+                });
+                emailController.clear();
+                passwordController.clear();
+              },
               child: Container(
-                  padding: EdgeInsets.all(10),
+                  padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(10),
                     color: Colors.blue,
                   ),
                   child: _isLoading
-                      ? CircularProgressIndicator()
-                      : Text("Sign In")),
+                      ? const CircularProgressIndicator()
+                      : const Text("Sign In")),
             ),
             const SizedBox(
               height: 20,
@@ -107,25 +117,5 @@ class _LoginScreenState extends State<LoginScreen> {
     ));
   }
 
-  void signInPerson(BuildContext context) async {
-    setState(() {
-      _isLoading = true;
-    });
-    String res = await AuthMethods().signInUser(
-      email: emailController.text,
-      password: passwordController.text,
-    );
-    setState(() {
-      _isLoading = false;
-    });
-    if (res == 'Success') {
-      Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (context) => const RegisterScreen()));
-    } else {
-      showSnackbar(res, context);
-    }
-    emailController.clear();
-    passwordController.clear();
-    showSnackbar(res, context);
-  }
+  void signInPerson(BuildContext context) async {}
 }

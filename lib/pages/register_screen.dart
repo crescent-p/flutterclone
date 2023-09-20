@@ -4,10 +4,8 @@ import 'package:flutterclone/utils/imagepicker.dart';
 import 'package:flutterclone/utils/showsnackbar.dart';
 import 'package:image_picker/image_picker.dart';
 
+import '../Bloc/auth_method.dart';
 import '../controller/textinput.dart';
-import '../resources/auth_methods.dart';
-import '../utils/storage.dart';
-
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
 
@@ -129,12 +127,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
               setState(() {
                 _isLoading = true;
               });
-              String res = await AuthMethods().signUpUser(
-                  bio: biocontroller.text,
-                  email: emailController.text,
-                  password: passwordController.text,
-                  username: nameController.text,
-                  profilePhoto: img!);
+              String res = await AuthMethod().signUpUser(
+                  emailController.text,
+                  passwordController.text,
+                  nameController.text,
+                  biocontroller.text,
+                  img!);
               biocontroller.clear();
               emailController.clear();
               passwordController.clear();
